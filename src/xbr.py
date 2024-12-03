@@ -1,14 +1,14 @@
  #! /usr/bin/env python3
 
- #  ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ 
- # |______|______|______|______|______|______|______|______|______|______|______|______|______|______|______|______|______| 
- #        _        ___  _      _      _____  ____   
- #       (_)      / _ \| |    | |    |  __ \|  _ \  
- #  __  ___  __ _| | | | |    | |    | |  | | |_) | 
- #  \ \/ / |/ _` | | | | |    | |    | |  | |  _ <  
- #   >  <| | (_| | |_| | |____| |____| |__| | |_) | 
- #  /_/\_\_|\__,_|\___/|______|______|_____/|____/                                                                                                                   
- #  ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ 
+ #  ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______
+ # |______|______|______|______|______|______|______|______|______|______|______|______|______|______|______|______|______|
+ #        _        ___  _      _      _____  ____
+ #       (_)      / _ \| |    | |    |  __ \|  _ \
+ #  __  ___  __ _| | | | |    | |    | |  | | |_) |
+ #  \ \/ / |/ _` | | | | |    | |    | |  | |  _ <
+ #   >  <| | (_| | |_| | |____| |____| |__| | |_) |
+ #  /_/\_\_|\__,_|\___/|______|______|_____/|____/
+ #  ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______
  # |______|______|______|______|______|______|______|______|______|______|______|______|______|______|______|______|______|
 
 '''
@@ -33,7 +33,7 @@ def __lldb_init_module (debugger, dict):
 
 def create_command_arguments(command):
     return shlex.split(command)
-    
+
 def is_command_valid(args):
     if len(args) == 0:
         return False
@@ -117,7 +117,7 @@ def is_class_method(arg):
         return True
     else:
         return False
-    
+
 def get_selected_frame():
     debugger = lldb.debugger
     target = debugger.GetSelectedTarget()
@@ -156,12 +156,12 @@ def get_instance_method_address(class_name, method_name):
         return 0
 
     method_addr = frame.EvaluateExpression('(void *)class_getMethodImplementation(%d, %d)' % (class_addr, sel_addr))
-    
+
     return method_addr.GetValueAsUnsigned()
 
 def get_all_method_address_of_class(debugger, classname):
 
-    command_script = '@import Foundation;const char* className = "' + classname + '";' 
+    command_script = '@import Foundation;const char* className = "' + classname + '";'
 
     command_script += r'''
     //NSMutableArray *mAddrArr = [NSMutableArray array];
@@ -170,13 +170,13 @@ def get_all_method_address_of_class(debugger, classname):
     unsigned int m_size = 0;
     Class cls = objc_getClass(className);
     struct objc_method ** metholds = (struct objc_method **)class_copyMethodList(cls, &m_size);
-    
+
 
     for (int j = 0; j < m_size; j++) {
         struct objc_method * meth = metholds[j];
         id implementation = (id)method_getImplementation(meth);
         NSString* m_name = NSStringFromSelector((SEL)method_getName(meth));
-        
+
         //[mAddrArr addObject:(id)[@((uintptr_t)implementation) stringValue]];
         NSNumber* implementationNum =  [NSNumber numberWithUnsignedLongLong:(uintptr_t)implementation];
         [retStr appendString:(id)[implementationNum stringValue]];
@@ -200,7 +200,7 @@ def get_all_method_address_of_class(debugger, classname):
     return retStr
 
 def get_main_image_index(debugger):
-    command_script = '@import Foundation;' 
+    command_script = '@import Foundation;'
     command_script += r'''
     #define	MH_EXECUTE	0x2		/* demand paged executable file */
     #ifdef __LP64__
@@ -208,23 +208,23 @@ def get_main_image_index(debugger):
     #else
     typedef struct mach_header mach_header_t;
     #endif
-    
+
     uint32_t idx = 0;
     for (int i = 0; i < (uint32_t)_dyld_image_count(); i++) {
         mach_header_t* mh = (mach_header_t*)_dyld_get_image_header(i);
         if (mh && mh->filetype == MH_EXECUTE) {
             idx = i;
-            break;        
+            break;
         }
     }
-    
+
     char ret[50] = {0};
 
     sprintf(ret, "$%d$", idx);
-    
+
     (char*)ret
     '''
-    
+
     retStr = utils.exe_script(debugger, command_script)
     retStr = retStr.split("$")[1]
     return int(retStr)
@@ -237,7 +237,7 @@ def get_macho_mod_init_first_func(debugger):
     command_script += r'''
     //NSMutableString* retStr = [NSMutableString string];
 
-    #define MH_MAGIC_64 0xfeedfacf 
+    #define MH_MAGIC_64 0xfeedfacf
     #define LC_SEGMENT_64   0x19
     typedef int                     integer_t;
     typedef integer_t       cpu_type_t;
@@ -306,11 +306,11 @@ def get_macho_mod_init_first_func(debugger):
         /* go through all load command to find __TEXT segment*/
         struct load_command * lcp = (struct load_command *)((uint8_t*)header + x_offset);
         x_offset += lcp->cmdsize;
-        
+
         if(lcp->cmd == LC_SEGMENT_64) {
             struct segment_command_64 * curSegment = (struct segment_command_64 *)lcp;
             struct section_64* curSection = (struct section_64*)((uint8_t*)curSegment + sizeof(struct segment_command_64));
-            
+
             if(!strcmp(curSection->segname, "__DATA")){
 
                 for (int i = 0; i < curSegment->nsects; i++) {
@@ -339,12 +339,12 @@ def get_macho_mod_init_first_func(debugger):
 def get_macho_entry_offset(debugger):
     idx = get_main_image_index(debugger)
     utils.ILOG(f"main image idx:{idx}")
-    command_script = '@import Foundation;' 
+    command_script = '@import Foundation;'
     command_script += f"uint32_t idx = {idx};"
     command_script += r'''
     //NSMutableString* retStr = [NSMutableString string];
 
-    #define MH_MAGIC_64 0xfeedfacf 
+    #define MH_MAGIC_64 0xfeedfacf
     #define LC_SEGMENT_64   0x19
     #define LC_REQ_DYLD     0x80000000
     #define LC_MAIN         (0x28|LC_REQ_DYLD)
@@ -424,7 +424,7 @@ def get_macho_entry_offset(debugger):
         struct load_command * lcp = (struct load_command *)((uint8_t*)header + x_offset);
         x_offset += lcp->cmdsize;
         if(lcp->cmd == LC_MAIN) {
-            uintptr_t slide =  (uintptr_t)_dyld_get_image_vmaddr_slide(idx);          
+            uintptr_t slide =  (uintptr_t)_dyld_get_image_vmaddr_slide(idx);
             struct entry_point_command* main_cmd = (struct entry_point_command*)lcp;
             main_addr = (uint64_t)slide + main_cmd->entryoff + 0x100000000;
 
@@ -448,28 +448,28 @@ def get_macho_entry_offset(debugger):
     */
 
     sprintf(ret, "0x%016lx", main_addr);
-    
+
     (char*)ret
     '''
     retStr = utils.exe_script(debugger, command_script)
     return retStr
 
 def get_main_image_path(debugger):
-    command_script = '@import Foundation;' 
+    command_script = '@import Foundation;'
     command_script += r'''
 
     // const char *path = (char *)[[[NSBundle mainBundle] executablePath] UTF8String];
     id bundle = objc_msgSend((Class)objc_getClass("NSBundle"), @selector(mainBundle));
     id exePath = objc_msgSend((id)bundle, @selector(executablePath));
     const char *path  = (char *)objc_msgSend((id)exePath, @selector(UTF8String));
-    
+
     path
     '''
     retStr = utils.exe_script(debugger, command_script)
     return retStr
 
 def get_process_module_slide(debugger, modulePath):
-    command_script = '@import Foundation;' 
+    command_script = '@import Foundation;'
     command_script += r'''
     uint32_t count = (uint32_t)_dyld_image_count();
     NSMutableString* retStr = [NSMutableString string];
@@ -477,9 +477,9 @@ def get_process_module_slide(debugger, modulePath):
     NSString* image_name = @"";
     const char *path = (char *)[[[NSBundle mainBundle] executablePath] UTF8String];
     '''
-   
+
     if modulePath:
-        command_script += 'NSString* modulePath = @"{}"\n'.format(modulePath)
+        command_script += 'NSString* modulePath = @"{};"\n'.format(modulePath)
     else:
         command_script += 'NSString* modulePath = [[NSString alloc] initWithUTF8String:path];'
 
@@ -488,7 +488,7 @@ def get_process_module_slide(debugger, modulePath):
     for(uint32_t i = 0; i < count; i++){
         const char* imageName = (const char*)_dyld_get_image_name(i);
         NSString* imageNameStr = [[NSString alloc] initWithUTF8String:imageName];
-        if([imageNameStr isEqualToString:imagePath]){
+        if([imageNameStr hasSuffix:imagePath]){
             idx = i;
             image_name = imageNameStr;
             break;
@@ -506,7 +506,7 @@ def get_process_module_slide(debugger, modulePath):
     return slide
 
 def get_all_class_plus_load_methods(debugger):
-    command_script = '@import Foundation;' 
+    command_script = '@import Foundation;'
     command_script += r'''
     NSMutableString* retStr = [NSMutableString string];
 
@@ -554,7 +554,7 @@ def xbr(debugger, command, result, dict):
             targetAddr_int = int(targetAddr, 16)
         else:
             targetAddr_int = int(targetAddr, 10)
-          
+
         utils.ILOG("breakpoint at address:{}".format(hex(targetAddr_int)))
         lldb.debugger.HandleCommand ('breakpoint set --address %d' % targetAddr_int)
         return
@@ -571,7 +571,7 @@ def xbr(debugger, command, result, dict):
             utils.ILOG("breakpoint at mod int first function:{}".format(hex(initFunAddr_int)))
             lldb.debugger.HandleCommand ('breakpoint set --address %d' % initFunAddr_int)
         elif options.entryAddress == "load":
-            
+
             ret = get_all_class_plus_load_methods(debugger)
             if "<object returned empty description>" in ret:
                 utils.ILOG("not found +[* load] method")
@@ -590,7 +590,7 @@ def xbr(debugger, command, result, dict):
             utils.ELOG("you should special the -E options:[main/init/load]")
 
         return
-        
+
 
     # check is arg is address ? mean auto add slide
     if is_just_address_cmd(args):
@@ -614,7 +614,7 @@ def xbr(debugger, command, result, dict):
             utils.ELOG("error in oc script # " + moduleSlide.strip())
             if modulePath:
                 targetImagePath = modulePath
-            else:               
+            else:
                 mainImagePath = get_main_image_path(debugger)
                 if "no value available" in  mainImagePath or "error" in mainImagePath:
                     ret = utils.exe_cmd(debugger, "target list")
@@ -628,7 +628,7 @@ def xbr(debugger, command, result, dict):
                     else:
                         utils.ELOG("failed to auto get main module, use -m option")
                         return
- 
+
                     mainImagePath = found
                     print("[+] use \"target list\" to get main module:" + mainImagePath)
                 else:
@@ -650,11 +650,11 @@ def xbr(debugger, command, result, dict):
 
         else:
             moduleSlide = int(moduleSlide, 10)
-            
+
         brAddr = moduleSlide + targetAddr_int
 
         utils.ILOG("ida's address:{} module slide:{} target breakpoint address:{}".format(hex(targetAddr_int), hex(moduleSlide), hex(brAddr)))
-        
+
         lldb.debugger.HandleCommand ('breakpoint set --address %d' % brAddr)
         return
 
@@ -674,7 +674,7 @@ def xbr(debugger, command, result, dict):
             address = int(addr)
             if address:
                 lldb.debugger.HandleCommand ('breakpoint set --address %x' % address)
-        
+
         result.AppendMessage("Set %ld breakpoints of %s" % (len(addrArr),classname))
         return
 
@@ -688,10 +688,10 @@ def xbr(debugger, command, result, dict):
             address = int(addr)
             if address:
                 lldb.debugger.HandleCommand ('breakpoint set --address %x' % address)
-        
+
         result.AppendMessage("Set %ld breakpoints of %s" % (len(addrArr),classname))
         return
-    
+
 
 
     if not is_command_valid(raw_args):
