@@ -1,0 +1,28 @@
+[project]
+name = "r0ylldb"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "roy", email = "7907969+ohroy@users.noreply.github.com" }
+]
+dependencies = []
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.pyright]
+include = ["src"]
+extraPaths = ["/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Resources/Python"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/r0ylldb"]
