@@ -479,7 +479,7 @@ def get_process_module_slide(debugger, modulePath):
     '''
 
     if modulePath:
-        command_script += 'NSString* modulePath = @"{};"\n'.format(modulePath)
+        command_script += 'NSString* modulePath = @"{}";'.format(modulePath)
     else:
         command_script += 'NSString* modulePath = [[NSString alloc] initWithUTF8String:path];'
 
@@ -489,6 +489,7 @@ def get_process_module_slide(debugger, modulePath):
         const char* imageName = (const char*)_dyld_get_image_name(i);
         NSString* imageNameStr = [[NSString alloc] initWithUTF8String:imageName];
         if([imageNameStr hasSuffix:imagePath]){
+            NSLog(@"bingo");
             idx = i;
             image_name = imageNameStr;
             break;
@@ -499,7 +500,6 @@ def get_process_module_slide(debugger, modulePath):
     [retStr appendString:image_name];
     [retStr appendString:@"#"];
     [retStr appendString:slideStr];
-
     slideStr
     '''
     slide = utils.exe_script(debugger, command_script)
