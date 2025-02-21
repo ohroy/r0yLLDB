@@ -1,0 +1,22 @@
+{
+  "languages": {
+    "Python": {
+      "language_servers": ["ruff", "pyright"]
+      // Or, if there are other language servers you want to use with Python
+      // "language_servers": ["pyright", "ruff"]
+    }
+  },
+  "lsp": {
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          // Ruff server settings goes here
+          "lineLength": 80,
+          "lint": {
+            "extendSelect": ["I"]
+          }
+        }
+      }
+    }
+  }
+}
