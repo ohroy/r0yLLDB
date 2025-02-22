@@ -1,6 +1,10 @@
 # r0yLLDB
 
-Orginal from https://github.com/4ch12dy/xia0LLDB
+
+
+
+
+
 
 ## Install
 
@@ -13,6 +17,21 @@ Just open Terminal and run below command
 #### Happy debugging ✔️
 
 ## Commands
+
+>[!NOTE]
+>chisel  本身自带的命令不再赘述
+
+
+### lmo
+
+监听指定module名字，一旦其加载，在指定偏移处设置断点
+```shell
+lmo module offset
+```
+
+```
+lmo HelperModule 0x1234
+```
 
 ### alias
 
@@ -429,3 +448,11 @@ runtime patch instrument in lldb
   Apple lldb opensource about heap
 
 - [https://blog.0xbbc.com/2015/07/%e6%8a%bd%e7%a6%bbcycript%e7%9a%84choose%e5%8a%9f%e8%83%bd/](https://blog.0xbbc.com/2015/07/抽离cycript的choose功能/)
+
+
+
+## Thanks
+
+inspired by https://github.com/4ch12dy/xia0LLDB
+loaded by https://github.com/facebook/chisel
+
