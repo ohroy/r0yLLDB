@@ -33,6 +33,16 @@ lmo module offset
 lmo HelperModule 0x1234
 ```
 
+### bo
+
+breakpoint with offset
+在当前断点处的模块+offset的位置设置断点
+
+```shell
+bo 0x1234
+```
+
+
 ### alias
 
 Below is cmds just use alias in cmd.txt
