@@ -42,6 +42,23 @@ breakpoint with offset
 bo 0x1234
 ```
 
+### xbr
+
+extra breakpoint command
+
+```
+xbr 0x1234
+# 给`主模块` + 0x1234 的位置设置断点. 
+```
+> [!TIP]
+> 注意这里的 0x1234 是file offset，即 ida 里的地址
+
+```
+xbr -m SharedModules 0x1234
+```
+
+给已加载的模块的指定文件偏移处设置断点
+
 
 ### alias
 
